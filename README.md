@@ -28,7 +28,7 @@ Then in your NixOS configuration:
 
 ```nix
 environment.systemPackages = [
-  inputs.proxsign.packages.x86_64-linux.default
+  inputs.proxsign.packages.${pkgs.stdenv.hostPlatform.system}.default
 ];
 
 nixpkgs.config.allowUnfree = true;
