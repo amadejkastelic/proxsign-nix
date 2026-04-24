@@ -1,7 +1,6 @@
 {
   appimageTools,
   fetchurl,
-  lib,
   makeDesktopItem,
 }:
 let
@@ -42,8 +41,6 @@ appimageTools.wrapType2 {
   meta = {
     description = "SETCCE proXSign - digital signing component for Slovenian national infrastructure";
     homepage = "https://www.setcce.si/products/proxsign";
-    license = lib.licenses.unfree;
-    maintainers = [ ];
     platforms = [ "x86_64-linux" ];
     mainProgram = "proxsign";
   };
