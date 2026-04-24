@@ -1,41 +1,54 @@
 # Proxsign (for Linux using Nix)
 
-[![Build Status](https://travis-ci.org/domenkozar/proxsign-nix.svg?branch=master)](https://travis-ci.org/domenkozar/proxsign-nix)
-
-This repository contains reproducible installation for proxsign signing component
-required for some Slovenian national infrastructure.
+This repository contains a Nix flake for the proXSign signing component required for some Slovenian national infrastructure.
 
 ## Installation
 
+First [install Nix](https://zero-to-nix.com/start/install) if you haven't already.
 
-First you'll need to install Nix via terminal (works on any Linux distribution):
+### Run without installing
 
-    $ curl -L https://nixos.org/nix/install | sh
-    $ source ~/.nix-profile/etc/profile.d/nix.sh
+    $ nix run impure github:amadejkastelic/proxsign-nix
 
-Then install proxsign:
+### Install with nix profile
 
-    $ nix-env -i -f https://github.com/domenkozar/proxsign-nix/tarball/master
-    
+    $ nix profile install --impure github:amadejkastelic/proxsign-nix
+
 ### Installing on NixOS
 
-If you are using nixos you can also add package to your nixos configuration.
-To install pacakge in you `system` profile you can add this in
-your `configuration.nix` file and rebuild your system:
+#### With flakes
+
+Add to your `flake.nix` inputs:
+
+```nix
+inputs.proxsign.url = "github:amadejkastelic/proxsign-nix";
+```
+
+Then in your NixOS configuration:
 
 ```nix
 environment.systemPackages = [
-  # ProxSign
-  (import (builtins.fetchTarball {
-    url = "https://github.com/domenkozar/proxsign-nix/archive/cc26bee496facdb61c2cbb2bcfef55e167d4a85b.tar.gz";
-    sha256 = "0smhpz7hw382mlin79v681nws4pna5bdg0w8cjb4iq23frnb5dw6";
-  }))
+  inputs.proxsign.packages.x86_64-linux.default
 ];
+
+nixpkgs.config.allowUnfree = true;
+```
+
+#### Without flakes
+
+Add to your `configuration.nix`:
+
+```nix
+environment.systemPackages = [
+  (builtins.getFlake "github:amadejkastelic/proxsign-nix").packages.x86_64-linux.default
+];
+
+nixpkgs.config.allowUnfree = true;
 ```
 
 ## Usage
 
-### 1. Run the application in terminal
+### 1. Run the application
 
     $ proxsign
 
@@ -48,10 +61,11 @@ Chromium:
 - Open https://localhost:14972/
 - You should see "Your connection is not private"
 - Click "Advanced"
-- Click "Proceed to localhost (unsafe)" (yes, that's "right")
+- Click "Proceed to localhost (unsafe)"
 - You will get an `404` error, which is fine
 
 Firefox:
+
 - Open https://localhost:14972/
 - Add an exception for certificate
 - You will get an `404` error, which is fine
@@ -62,13 +76,3 @@ Firefox:
 - Click "Podpisi"
 - Click "Vredu"
 - Click "Preveri podpis"
-
-
-## Uninstall Nix package manager (optional)
-
-    $ sudo rm -rf /nix
-    $ sudo rm -rf ~/.nix-*
-
-# References
-
-- http://www.si-ca.si/podpisna_komponenta/g2/navodilo-linux_2_1_2_58_1.php
