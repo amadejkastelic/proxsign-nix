@@ -17,7 +17,7 @@
       in
       {
         packages = {
-          proxsign = pkgs.callPackage ./default.nix { };
+          proxsign = pkgs.callPackage (if pkgs.stdenv.isDarwin then ./darwin.nix else ./default.nix) { };
           default = self.packages.${system}.proxsign;
         };
       }
