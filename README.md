@@ -8,7 +8,7 @@ First [install Nix](https://zero-to-nix.com/start/install) if you haven't alread
 
 ### Run without installing
 
-    $ nix run impure github:amadejkastelic/proxsign-nix
+    $ nix run github:amadejkastelic/proxsign-nix
 
 ### Install with nix profile
 
@@ -30,8 +30,6 @@ Then in your NixOS configuration:
 environment.systemPackages = [
   inputs.proxsign.packages.${pkgs.stdenv.hostPlatform.system}.default
 ];
-
-nixpkgs.config.allowUnfree = true;
 ```
 
 #### Without flakes
@@ -42,8 +40,6 @@ Add to your `configuration.nix`:
 environment.systemPackages = [
   (builtins.getFlake "github:amadejkastelic/proxsign-nix").packages.x86_64-linux.default
 ];
-
-nixpkgs.config.allowUnfree = true;
 ```
 
 ## Usage
