@@ -6,8 +6,8 @@ LINUX_URL="https://public.setcce.si/proxsign/update/linux/SETCCE_proXSign"
 MACOS_URL="https://public.setcce.si/proxsign/update/mac/SETCCE_proXSign"
 
 versions=$(curl -s "$VERSIONS_URL")
-latest_linux=$(echo "$versions" | jq -r '.linux')
-latest_mac=$(echo "$versions" | jq -r '.mac')
+latest_linux=$(echo "$versions" | nix run nixpkgs#jq -- -r '.linux')
+latest_mac=$(echo "$versions" | nix run nixpkgs#jq -- -r '.mac')
 
 current_linux=$(grep -oP 'version = "\K[^"]+' default.nix)
 current_mac=$(grep -oP 'version = "\K[^"]+' darwin.nix)
