@@ -25,35 +25,26 @@ stdenvNoCC.mkDerivation rec {
     xar -xf $src
   '';
 
+  dontConfigure = true;
+  dontBuild = true;
+
   installPhase = ''
-    mkdir -p $out/Applications
+    runHook preInstall
 
-    pkg_dir=""
-    for d in proXSign*.pkg; do
-      if [ -d "$d" ]; then
-        pkg_dir="$d"
-        break
-      fi
-    done
+    gzip -dc Payload | cpio -i
 
-    if [ -z "$pkg_dir" ]; then
-      echo "Could not find proXSign package directory"
-      exit 1
-    fi
+    appDir="$out/Applications/SETCCE proXSign.app"
+    mkdir -p "$appDir"
+    mv Contents "$appDir/"
 
-    cd "$pkg_dir"
+    mkdir -p "$out/bin"
+    cat > "$out/bin/proxsign" <<WRAPPER
+    #!${stdenvNoCC.shell}
+    exec "$appDir/Contents/MacOS/proxsign" "\$@"
+    WRAPPER
+    chmod +x "$out/bin/proxsign"
 
-    if [ -f Payload ]; then
-      cat Payload | gzip -dc | cpio -i 2>/dev/null || true
-    fi
-
-    app=$(find . -name "*.app" -maxdepth 1 -type d | head -1)
-    if [ -n "$app" ]; then
-      cp -R "$app" $out/Applications/
-    else
-      echo "Could not find .app bundle"
-      exit 1
-    fi
+    runHook postInstall
   '';
 
   meta = {
@@ -63,6 +54,6 @@ stdenvNoCC.mkDerivation rec {
       "x86_64-darwin"
       "aarch64-darwin"
     ];
-    mainProgram = "proXSign";
+    mainProgram = "proxsign";
   };
 }
